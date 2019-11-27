@@ -1,0 +1,272 @@
+﻿@model RestaurantApi.Models.Table
+@{
+    ViewBag.Title = "Home Page";
+}
+<script src="~/Scripts/jquery-3.3.1.js"></script>
+<div>
+    <div id="div1"></div>
+    <input id="btnOrder" type="button" value="Wybierz stoliki" />
+    <div id="div2"> </div>
+</div>
+<script>
+    var emptyTables;
+    var menuX;
+    function main() {
+        $('#div1').ready(function() {
+            $.ajax({
+                type: "GET",
+                url: "/api/Table/GetTables",
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+
+                success: function(data) {
+                    console.log(data);
+                    emptyTables = data.length;
+                    var html = '';
+                    for (var i = 0; i < data.length; i++) {
+                        if (data[i].empty) {
+                            html += '<tr><td><input id="checkbox' +
+                                i +
+                                '" type="checkbox" />' +
+                                data[i].tableName +
+                                '</td></tr>';
+                        } else {
+                            html += '<tr><td><input id="checkbox' + i + '" type="checkbox" disabled/>' + data[i].tableName + '</td></tr>';
+                        }
+                    }
+                    $('#div1').html(html);
+                },
+                error: function(xhr, status) {
+                    alert(status);
+                }
+            });
+        });
+    }
+
+    main();
+
+    $('#btnOrder').click(function() {
+        $.ajax({
+            type: "GET",
+            url: "/api/Table/GetMenu",
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+
+            success: function(menu) {
+                menuX = menu;
+                var html1 = '';
+
+                for (i = 0; i < emptyTables; i++) {
+                    var cena = 0;
+                    if (document.getElementById("checkbox" + i).checked) {
+                        html1 += '<div id="s'+i+'">';
+                        html1 += '<h3>Stolik' + i + '</h3>';
+                        html1 += '<li id="Stolik' + i + '" size="' + emptyTables + '">';
+                        for (j = 0; j < menu.length; j++) {
+                            html1 += '<ul>' + menu[j].id + ' ' + menu[j].mealName + ' ' + menu[j].price + '</ul>';
+                            html1 += '<input class="choice" id="ilosc' + i + j + '" type="number" min="0" value="0" />';
+                        }
+                        html1 += '</li>';
+                        html1 += '<h3 id="cena' + i + '">' + cena +'</h3>';
+                        html1 += '<input id="btnChoiceMeal' + i + '" type="button" value="Podsumuj" /> </ br>';
+                        html1 += '<input id="makeOrder' + i + '" type="button" disabled="true" value="Zamów" /> </ br>';
+                        html1 += '</div>';
+                    }
+                    $('#div2').html(html1);
+                }
+                licz(menuX);
+                zamow(menuX);
+            },
+            error: function(xhr, status) {
+                alert(status);
+            }
+        });
+    }); 
+    
+    function podajCene(menu, stolik) {
+        var price = 0;
+        for (j = 0; j < menu.length; j++) {
+            var iloscPozycji = document.getElementById("ilosc"+ stolik + j).value;
+            price += iloscPozycji * menu[j].price;
+        }
+        document.getElementById("cena" + stolik).innerHTML = price.toFixed(2);
+        if (price > 0) {
+            document.getElementById("makeOrder" + stolik).disabled = false;
+        }
+    }
+    function licz(menu) {
+        if ($('#btnChoiceMeal0').length) {
+            $('#btnChoiceMeal0').click(function() {
+                t = 0;
+                podajCene(menu, t);
+            });
+        }
+        if ($('#btnChoiceMeal1').length) {
+            $('#btnChoiceMeal1').click(function() {
+                t = 1;
+                podajCene(menu, t);
+            });
+        }
+        if ($('#btnChoiceMeal2').length) {
+            $('#btnChoiceMeal2').click(function () {
+                t = 2;
+                podajCene(menu, t);
+            });
+        }
+        if ($('#btnChoiceMeal3').length) {
+            $('#btnChoiceMeal3').click(function() {
+                t = 3;
+                podajCene(menu, t);
+            });
+        }
+        if ($('#btnChoiceMeal4').length) {
+            $('#btnChoiceMeal4').click(function() {
+                t = 4;
+                podajCene(menu, t);
+            });
+        }
+        if ($('#btnChoiceMeal5').length) {
+            $('#btnChoiceMeal5').click(function() {
+                t = 5;
+                podajCene(menu, t);
+            });
+        }
+        if ($('#btnChoiceMeal6').length) {
+            $('#btnChoiceMeal6').click(function() {
+                t = 6;
+                podajCene(menu, t);
+            });
+        }
+        if ($('#btnChoiceMeal7').length) {
+            $('#btnChoiceMeal7').click(function() {
+                t = 7;
+                podajCene(menu, t);
+            });
+        }
+        if ($('#btnChoiceMeal8').length) {
+            $('#btnChoiceMeal8').click(function() {
+                t = 8; podajCene(menu, t);
+            });
+        }
+        if ($('#btnChoiceMeal9').length) {
+            $('#btnChoiceMeal9').click(function() {
+                t = 9;
+                podajCene(menu, t);
+            });
+        }
+        
+    }
+
+    function zamow(menu) {
+        if ($('#makeOrder0').length) {
+            $('#makeOrder0').click(function () {
+                t = 0;
+                wyslij(menu, t);
+                $('#makeOrder0').attr("hidden", true);
+            });
+        }
+        if ($('#makeOrder1').length) {
+            $('#makeOrder1').click(function () {
+                t = 1;
+                wyslij(menu, t);
+                $('#makeOrder1').attr("hidden", true);
+            });
+        }
+        if ($('#makeOrder2').length) {
+            $('#makeOrder2').click(function () {
+                t = 2;
+                wyslij(menu, t);
+                $('#makeOrder2').attr("hidden", true);
+            });
+        }
+        if ($('#makeOrder3').length) {
+            $('#makeOrder3').click(function () {
+                t = 3;
+                wyslij(menu, t);
+                $('#makeOrder3').attr("hidden", true);
+            });
+        }
+        if ($('#makeOrder4').length) {
+            $('#makeOrder4').click(function () {
+                t = 4;
+                wyslij(menu, t);
+                $('#makeOrder4').attr("hidden", true);
+            });
+        }
+        if ($('#makeOrder5').length) {
+            $('#makeOrder5').click(function () {
+                t = 5;
+                wyslij(menu, t);
+                $('#makeOrder5').attr("hidden", true);
+            });
+        }
+        if ($('#makeOrder6').length) {
+            $('#makeOrder6').click(function () {
+                t = 6;
+                wyslij(menu, t);
+                $('#makeOrder6').attr("hidden", true);
+            });
+        }
+        if ($('#makeOrder7').length) {
+            $('#makeOrder7').click(function () {
+                t = 7;
+                wyslij(menu, t);
+                $('#makeOrder7').attr("hidden", true);
+            });
+        }
+        if ($('#makeOrder8').length) {
+            $('#makeOrder8').click(function () {
+                t = 8;
+                wyslij(menu, t);
+                $('#makeOrder8').attr("hidden", true);
+            });
+        }
+        if ($('#makeOrder9').length) {
+            $('#makeOrder9').click(function () {
+                t = 9;
+                wyslij(menu, t);
+                $('#makeOrder9').attr("hidden", true);
+            });
+        }
+
+    }
+    function wyslij(menu, stolik) {
+        var price = 0;
+        var tableId = stolik;
+        var oMeals = [];
+        for (j = 0; j < menu.length; j++) {
+            var iloscPozycji = document.getElementById("ilosc" + stolik + j).value;
+            if (iloscPozycji > 0) {
+                for (i = 1; i <= iloscPozycji; i++) {
+                    var pos = { id: menu[j].id, mealName: menu[j].mealName, price: menu[j].price.toFixed(2) };
+                    price += menu[j].price;
+                    oMeals.push(pos);
+                }
+            }
+        }
+        var order = {
+            id: stolik, orderedMeals: oMeals, tableId: tableId, totalPrice: price
+        };
+
+
+        order = JSON.stringify(order);
+        console.log(order);
+
+        $.ajax({
+            contentType: 'application/json; charset=utf-8',
+            dataType: 'json',
+            type: 'POST',
+            url: '/api/Table/PostOrder',
+            data: order ,
+            success: function (data) {          
+                console.log('Json passed');
+            },
+            error: function (error) {          
+                console.log('Json fail');
+            }
+        });
+        
+    }
+    
+
+</script>
